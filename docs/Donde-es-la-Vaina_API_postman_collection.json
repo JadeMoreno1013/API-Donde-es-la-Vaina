@@ -1,0 +1,1877 @@
+{
+  "info": {
+    "_postman_id": "0943fd1b-204b-4ada-a668-3d089c90e5b2",
+    "name": "Donde-es-la-Vaina API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "58962078",
+    "_collection_link": "https://go.postman.co/collection/58962078-0943fd1b-204b-4ada-a668-3d089c90e5b2?source=collection_link",
+    "description": "Colección de pruebas de la API. Orden de ejecución: de arriba hacia abajo, una sola vez. Estado previo requerido: base de datos nueva, usuario admin@email.com (id 1) con is_admin = TRUE y un lugar creado (id 1). El código esperado de cada petición sale de su nombre (' - 404'); sin código se espera 201 en POST, 204 en DELETE y 200 en el resto."
+  },
+  "item": [
+    {
+      "name": "POST /sessions",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "   pm.collectionVariables.set(\"adminToken\", pm.response.json().token);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "   {\r\n     \"email\": \"admin@email.com\",\r\n     \"password\": \"admin12345\"\r\n   }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/sessions",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "sessions"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST /venues",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "   {\r\n     \"name\": \"Teatro Colsubsidio\",\r\n     \"address\": \"Calle 26 # 25-50\",\r\n     \"city\": \"Bogotá\",\r\n     \"venue_capacity\": 1000\r\n   }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/venues",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "venues"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST /events",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"venue_id\": 1,\r\n  \"event_type\": \"concert\",\r\n  \"name\": \"Electric Dreams Festival\",\r\n  \"description\": \"Festival de música electrónica\",\r\n  \"event_date\": \"2026-12-15 19:00:00\",\r\n  \"price_min\": 85,\r\n  \"price_max\": 360,\r\n  \"event_capacity\": 5000,\r\n  \"event_details\": {\r\n    \"lineup\": [\r\n      {\r\n        \"artist\": \"Artista Uno\",\r\n        \"time\": \"20:00\"\r\n      },\r\n      {\r\n        \"artist\": \"Artista Dos\",\r\n        \"time\": \"21:30\"\r\n      }\r\n    ]\r\n  }\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/events",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "events"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET /events",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/events",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "events"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET /events/{id}",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/events/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "events",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET /events/{id} - 404",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/events/9999",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "events",
+            "9999"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST /users",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "   {\r\n     \"name\": \"Laura\",\r\n     \"last_name\": \"Perez\",\r\n     \"email\": \"laura@user.com\",\r\n     \"password\": \"laura12345\"\r\n   }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/users",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST /sessions - user",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "   pm.collectionVariables.set(\"userToken\", pm.response.json().token);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "   {\r\n     \"email\": \"laura@user.com\",\r\n     \"password\": \"laura12345\"\r\n   }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/sessions",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "sessions"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST /purchases",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{userToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"event_id\": 1,\r\n  \"tickets\": [\r\n    { \"zone\": \"VIP\", \"price_paid\": 360 }\r\n  ]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/purchases",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "purchases"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET /purchases/{id}",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/purchases/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "purchases",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET /purchases",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{userToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/purchases",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "purchases"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET /purchases/{id}/tickets",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{userToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/purchases/1/tickets",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "purchases",
+            "1",
+            "tickets"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET /purchases/{id} - 404",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{userToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/purchases/9999",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "purchases",
+            "9999"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST /reviews - 409",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{userToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": " {\r\n  \"purchase_id\": 1,\r\n  \"rating\": 5,\r\n  \"comment\": \"Excelente ambiente\",\r\n  \"seat_rating\": 4,\r\n  \"tags\": [\r\n    \"Buen ambiente\",\r\n    \"Puntualidad\"\r\n  ]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/reviews",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "reviews"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "PATCH /events/{id}",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "   { \"status\": \"finished\" }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/events/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "events",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST /reviews - 201",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{userToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": " {\r\n  \"purchase_id\": 1,\r\n  \"rating\": 5,\r\n  \"comment\": \"Excelente ambiente\",\r\n  \"seat_rating\": 4,\r\n  \"tags\": [\r\n    \"Buen ambiente\",\r\n    \"Puntualidad\"\r\n  ]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/reviews",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "reviews"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET /reviews",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{userToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/reviews",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "reviews"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET /reviews/{id}",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{userToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/reviews/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "reviews",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET /reviews/{id} - 404",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{userToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/reviews/9999",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "reviews",
+            "9999"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "PATCH /reviews/{id}",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{userToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "   { \"comment\": \"Excelente ambiente y buena organización\" }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/reviews/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "reviews",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST /users - user2",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "   {\r\n     \"name\": \"Pedro\",\r\n     \"last_name\": \"Ortiz\",\r\n     \"email\": \"pedro@user.com\",\r\n     \"password\": \"pedro12345\"\r\n   }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/users",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST /sessions - user2",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "    pm.collectionVariables.set(\"user2Token\", pm.response.json().token);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "   {\r\n     \"email\": \"pedro@user.com\",\r\n     \"password\": \"pedro12345\"\r\n   }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/sessions",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "sessions"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "PATCH /reviews/{id} - 403",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{user2Token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "  {\"rating\": 2}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/reviews/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "reviews",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET /events/{id}/info - 403",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{user2Token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/events/1/info",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "events",
+            "1",
+            "info"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET /users - 403",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{user2Token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/users",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET /users/{id} - 403",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{user2Token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/users/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET /purchases/{id} - 403",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{user2Token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/purchases/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "purchases",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET /users - 403 (Laura)",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{userToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/users",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET /users/{id} - 403 (Laura)",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{userToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/users/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "PATCH /users/{id} - 403",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{userToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "  {\"is_admin\": true}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/users/2",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users",
+            "2"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET /users",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/users",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET /users/{id}",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/users/2",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users",
+            "2"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "PATCH /users/{id}",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{userToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": " {\"name\":\"Laura María\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/users/2",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users",
+            "2"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET /venues",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/venues",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "venues"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET /venues/{id}",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/venues/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "venues",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "PUT /venues/{id}",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Teatro Colsubsidio\",\r\n  \"address\": \"Calle 26 # 25-50\",\r\n  \"city\": \"Bogotá\",\r\n  \"venue_capacity\": 1200\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/venues/2",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "venues",
+            "2"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST /sessions - 401 incorrect password",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              ""
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "   {\r\n     \"email\": \"laura@user.com\",\r\n     \"password\": \"laura5487\"\r\n   }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/sessions",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "sessions"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST /users - 409 duplicate email",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "   {\r\n     \"name\": \"Laura Camila\",\r\n     \"last_name\": \"Perez\",\r\n     \"email\": \"laura@user.com\",\r\n     \"password\": \"lauraPerez12345\"\r\n   }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/users",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET /venues/{id} - 404",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/venues/9999",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "venues",
+            "9999"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST /venues - 400 capacity 0",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "   {\r\n     \"name\": \"Teatro Faenza\",\r\n     \"address\": \"Calle 26 # 25-50\",\r\n     \"city\": \"Bogotá\",\r\n     \"venue_capacity\": 0\r\n   }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/venues",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "venues"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "PUT /venues/{id} - 400 no fields",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/venues/2",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "venues",
+            "2"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DELETE /venues/{id} - 409 venue with events",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/venues/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "venues",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DELETE /users/{id} - 409 user with purchases",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/users/2",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users",
+            "2"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST /events - 201 second event",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"venue_id\": 2,\r\n  \"event_type\": \"concert\",\r\n  \"name\": \"Evento temporal\",\r\n  \"description\": \"Festival de música electrónica\",\r\n  \"event_date\": \"2026-12-28 13:00:00\",\r\n  \"price_min\": 85,\r\n  \"price_max\": 360,\r\n  \"event_capacity\": 1000,\r\n  \"event_details\": {\r\n    \"lineup\": [\r\n      {\r\n        \"artist\": \"Artista Uno\",\r\n        \"time\": \"20:00\"\r\n      },\r\n      {\r\n        \"artist\": \"Artista Dos\",\r\n        \"time\": \"21:30\"\r\n      }\r\n    ]\r\n  }\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/events",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "events"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET /events/{id}/info",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{userToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/events/1/info",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "events",
+            "1",
+            "info"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "PUT /events/{id}/info",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"event_details\": {\r\n    \"lineup\": [\r\n      {\r\n        \"artist\": \"Artista Uno\",\r\n        \"time\": \"14:00\"\r\n      },\r\n      {\r\n        \"artist\": \"Artista Dos\",\r\n        \"time\": \"15:30\"\r\n      }\r\n    ]\r\n  }\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/events/2/info",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "events",
+            "2",
+            "info"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET /events - 400 invalid event_type",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/events?event_type=opera",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "events"
+          ],
+          "query": [
+            {
+              "key": "event_type",
+              "value": "opera"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST /events - 400 inconsistent type and details",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"venue_id\": 2,\r\n  \"event_type\": \"sports\",\r\n  \"name\": \"Mundial COL vs ESP\",\r\n  \"description\": \"Partido mundial\",\r\n  \"event_date\": \"2026-12-28 13:00:00\",\r\n  \"price_min\": 85,\r\n  \"price_max\": 360,\r\n  \"event_capacity\": 1000,\r\n  \"event_details\": {\r\n    \"lineup\": [\r\n      {\r\n        \"artist\": \"Artista Uno\",\r\n        \"time\": \"20:00\"\r\n      },\r\n      {\r\n        \"artist\": \"Artista Dos\",\r\n        \"time\": \"21:30\"\r\n      }\r\n    ]\r\n  }\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/events",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "events"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "PATCH /events/{id} - 400 empty body",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": " { }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/events/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "events",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "PUT /events/{id}/info - 400 incorrect structure",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"lineup\": [\r\n    {\r\n      \"artist\": \"Artista Uno\",\r\n      \"time\": \"14:00\"\r\n    },\r\n    {\r\n      \"artist\": \"Artista Dos\",\r\n      \"time\": \"15:30\"\r\n    }\r\n  ]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/events/2/info",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "events",
+            "2",
+            "info"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DELETE /events/{id} - 409 event with purchases",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/events/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "events",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST /purchases - 409 event concluded",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{userToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"event_id\": 1,\r\n  \"tickets\": [\r\n    { \"zone\": \"VIP\", \"price_paid\": 360 }\r\n  ]\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/purchases",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "purchases"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET /purchases - 401 without a token",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/purchases",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "purchases"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET /purchases/{id}/tickets - 404",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{userToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/purchases/9999/tickets",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "purchases",
+            "9999",
+            "tickets"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET /reviews - 200 filtered by event",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{userToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/reviews?event_id=1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "reviews"
+          ],
+          "query": [
+            {
+              "key": "event_id",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET /reviews - 400 invalid filter",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{userToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/reviews?event_id=abc",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "reviews"
+          ],
+          "query": [
+            {
+              "key": "event_id",
+              "value": "abc"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DELETE /reviews/{id} - 404",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{userToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/reviews/9999",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "reviews",
+            "9999"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST /users - temp",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "   {\r\n     \"name\": \"temp\",\r\n     \"last_name\": \"Ortiz\",\r\n     \"email\": \"temp@user.com\",\r\n     \"password\": \"temp12345\"\r\n   }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/users",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST /sessions - temp",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "       pm.collectionVariables.set(\"tempToken\", pm.response.json().token);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "   {\r\n     \"email\": \"temp@user.com\",\r\n     \"password\": \"temp12345\"\r\n   }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/sessions",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "sessions"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DELETE /sessions",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{tempToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/sessions",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "sessions"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DELETE /sessions - 401",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/sessions",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "sessions"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DELETE /users/{id} - 204 temporary user",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/users/4",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users",
+            "4"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST /venues - 201 disposable venue",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "   {\r\n     \"name\": \"Teatro Colón\",\r\n     \"address\": \"Calle 46 # 25-50\",\r\n     \"city\": \"Bogotá\",\r\n     \"venue_capacity\": 1500\r\n   }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/venues",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "venues"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DELETE /venues/{id} - 204 disposable venue",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/venues/3",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "venues",
+            "3"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DELETE /events/{id} - 204 disposable event",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": " { }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/events/2",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "events",
+            "2"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DELETE /reviews/{id} - 204",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{userToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/reviews/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "reviews",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{adminToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000"
+    },
+    {
+      "key": "adminToken",
+      "value": ""
+    },
+    {
+      "key": "userToken",
+      "value": ""
+    },
+    {
+      "key": "user2Token",
+      "value": ""
+    },
+    {
+      "key": "tempToken",
+      "value": ""
+    }
+  ],
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "const match = pm.info.requestName.match(/ - (\\d{3})\\b/);",
+          "const defaultCodes = { POST: 201, DELETE: 204 };",
+          "const expectedCode = match ? Number(match[1]) : (defaultCodes[pm.request.method] || 200);",
+          "pm.test(`${pm.info.requestName}: responde ${expectedCode}`, () => {",
+          "    pm.response.to.have.status(expectedCode);",
+          "});"
+        ]
+      }
+    }
+  ]
+}

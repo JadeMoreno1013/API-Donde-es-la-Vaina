@@ -1,0 +1,1560 @@
+openapi: 3.0.3
+info:
+  title: Donde Es La Vaina API
+  version: 1.0.0
+  description: 'API REST de la plataforma de venta de boletería. Las rutas protegidas requieren la cabecera Authorization:
+    Bearer <token>, obtenido con POST /sessions. Los cuerpos JSON usan los mismos nombres que las columnas de la base de datos.'
+servers:
+- url: http://localhost:5000
+  description: Desarrollo local
+tags:
+- name: Sessions
+- name: Users
+- name: Venues
+- name: Events
+- name: Purchases
+- name: Reviews
+paths:
+  /sessions:
+    post:
+      tags:
+      - Sessions
+      summary: Iniciar sesión
+      description: Verifica las credenciales y devuelve un token Bearer para usar en las rutas protegidas.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Credentials'
+            example:
+              email: laura@example.com
+              password: miClave123
+      responses:
+        '201':
+          description: Sesión creada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+              example:
+                token: 0b7f0c0e-6c1e-4e0a-9d52-3f4b2d3a9a11
+                user:
+                  id_user: 3
+                  name: Laura
+                  last_name: Pérez
+                  email: laura@example.com
+                  registration_date: '2026-10-01T14:30:00.000Z'
+                  is_admin: 0
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    delete:
+      tags:
+      - Sessions
+      summary: Cerrar sesión
+      description: Invalida el token enviado en la cabecera Authorization.
+      security:
+      - bearerAuth: []
+      responses:
+        '204':
+          description: Sesión cerrada
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /users:
+    post:
+      tags:
+      - Users
+      summary: Registrar usuario
+      description: Crea una cuenta de usuario final. El rol administrador no puede asignarse al registrarse.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegistration'
+            example:
+              name: Laura
+              last_name: Pérez
+              email: laura@example.com
+              password: miClave123
+      responses:
+        '201':
+          description: Usuario creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              example:
+                id_user: 3
+                name: Laura
+                last_name: Pérez
+                email: laura@example.com
+                registration_date: '2026-10-01T14:30:00.000Z'
+                is_admin: 0
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+    get:
+      tags:
+      - Users
+      summary: Listar usuarios
+      description: Solo administradores.
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de usuarios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+              example:
+              - id_user: 3
+                name: Laura
+                last_name: Pérez
+                email: laura@example.com
+                registration_date: '2026-10-01T14:30:00.000Z'
+                is_admin: 0
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /users/{id}:
+    get:
+      tags:
+      - Users
+      summary: Consultar usuario
+      description: El propio usuario o un administrador.
+      security:
+      - bearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Usuario
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              example:
+                id_user: 3
+                name: Laura
+                last_name: Pérez
+                email: laura@example.com
+                registration_date: '2026-10-01T14:30:00.000Z'
+                is_admin: 0
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags:
+      - Users
+      summary: Actualizar usuario (parcial)
+      description: El propio usuario o un administrador. Solo un administrador puede cambiar is_admin.
+      security:
+      - bearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+            example:
+              name: Laura María
+      responses:
+        '200':
+          description: Usuario actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              example:
+                id_user: 3
+                name: Laura
+                last_name: Pérez
+                email: laura@example.com
+                registration_date: '2026-10-01T14:30:00.000Z'
+                is_admin: 0
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+    delete:
+      tags:
+      - Users
+      summary: Eliminar usuario
+      description: Solo administradores. Falla con 409 si el usuario tiene compras.
+      security:
+      - bearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/Id'
+      responses:
+        '204':
+          description: Usuario eliminado
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+  /venues:
+    get:
+      tags:
+      - Venues
+      summary: Listar lugares
+      description: Público.
+      responses:
+        '200':
+          description: Lista de lugares
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Venue'
+              example:
+              - id_venue: 1
+                name: Movistar Arena
+                address: Cra 30 con Calle 63
+                city: Bogotá
+                venue_capacity: 14000
+    post:
+      tags:
+      - Venues
+      summary: Crear lugar
+      description: Solo administradores. El par name y city debe ser único.
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VenueInput'
+            example:
+              name: Movistar Arena
+              address: Cra 30 con Calle 63
+              city: Bogotá
+              venue_capacity: 14000
+      responses:
+        '201':
+          description: Lugar creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Venue'
+              example:
+                id_venue: 1
+                name: Movistar Arena
+                address: Cra 30 con Calle 63
+                city: Bogotá
+                venue_capacity: 14000
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+  /venues/{id}:
+    get:
+      tags:
+      - Venues
+      summary: Consultar lugar
+      description: Público.
+      parameters:
+      - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Lugar
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Venue'
+              example:
+                id_venue: 1
+                name: Movistar Arena
+                address: Cra 30 con Calle 63
+                city: Bogotá
+                venue_capacity: 14000
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+      - Venues
+      summary: Reemplazar lugar
+      description: Solo administradores. Requiere todos los campos.
+      security:
+      - bearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VenueInput'
+            example:
+              name: Movistar Arena
+              address: Cra 30 con Calle 63
+              city: Bogotá
+              venue_capacity: 14000
+      responses:
+        '200':
+          description: Lugar actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Venue'
+              example:
+                id_venue: 1
+                name: Movistar Arena
+                address: Cra 30 con Calle 63
+                city: Bogotá
+                venue_capacity: 14000
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+    delete:
+      tags:
+      - Venues
+      summary: Eliminar lugar
+      description: Solo administradores. Falla con 409 si tiene eventos.
+      security:
+      - bearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/Id'
+      responses:
+        '204':
+          description: Lugar eliminado
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+  /events:
+    get:
+      tags:
+      - Events
+      summary: Listar eventos
+      description: Público. Catálogo con filtros opcionales, ordenado por fecha. Un evento agotado es el que tiene available_tickets
+        igual a 0.
+      parameters:
+      - name: event_type
+        in: query
+        description: Tipo de evento
+        schema:
+          type: string
+          enum:
+          - concert
+          - sports
+          - theater
+      - name: status
+        in: query
+        description: Estado del evento
+        schema:
+          type: string
+          enum:
+          - scheduled
+          - finished
+          - cancelled
+      - name: max_price
+        in: query
+        description: Muestra eventos cuyo precio mínimo sea menor o igual a este valor
+        schema:
+          type: number
+          minimum: 0
+      - name: search
+        in: query
+        description: Texto a buscar en el nombre y en la información del evento (artistas, equipos, reparto)
+        schema:
+          type: string
+          maxLength: 100
+      responses:
+        '200':
+          description: Lista de eventos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventSummary'
+              example:
+              - id_event: 5
+                venue_id: 1
+                event_type: concert
+                name: Electric Dreams Festival
+                description: Festival de música electrónica
+                image_url: null
+                event_date: '2026-12-15T19:00:00.000Z'
+                status: scheduled
+                price_min: 85
+                price_max: 360
+                event_capacity: 5000
+                available_tickets: 4980
+                venue_name: Movistar Arena
+                venue_city: Bogotá
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    post:
+      tags:
+      - Events
+      summary: Crear evento
+      description: Solo administradores. Crea el evento y su información en una transacción. available_tickets inicia igual
+        a event_capacity, que no puede superar la capacidad del lugar. event_details debe corresponder al event_type (ver
+        esquema EventDetails).
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventCreate'
+            example:
+              venue_id: 1
+              event_type: concert
+              name: Electric Dreams Festival
+              description: Festival de música electrónica
+              event_date: '2026-12-15 19:00:00'
+              price_min: 85
+              price_max: 360
+              event_capacity: 5000
+              event_details:
+                lineup:
+                - artist: Artista Uno
+                  time: '20:00'
+                - artist: Artista Dos
+                  time: '21:30'
+      responses:
+        '201':
+          description: Evento creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventDetail'
+              example:
+                id_event: 5
+                venue_id: 1
+                event_type: concert
+                name: Electric Dreams Festival
+                description: Festival de música electrónica
+                image_url: null
+                event_date: '2026-12-15T19:00:00.000Z'
+                status: scheduled
+                price_min: 85
+                price_max: 360
+                event_capacity: 5000
+                available_tickets: 4980
+                venue_name: Movistar Arena
+                venue_city: Bogotá
+                event_details:
+                  lineup:
+                  - artist: Artista Uno
+                    time: '20:00'
+                  - artist: Artista Dos
+                    time: '21:30'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /events/{id}:
+    get:
+      tags:
+      - Events
+      summary: Consultar evento
+      description: Público. Incluye event_details.
+      parameters:
+      - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Evento
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventDetail'
+              example:
+                id_event: 5
+                venue_id: 1
+                event_type: concert
+                name: Electric Dreams Festival
+                description: Festival de música electrónica
+                image_url: null
+                event_date: '2026-12-15T19:00:00.000Z'
+                status: scheduled
+                price_min: 85
+                price_max: 360
+                event_capacity: 5000
+                available_tickets: 4980
+                venue_name: Movistar Arena
+                venue_city: Bogotá
+                event_details:
+                  lineup:
+                  - artist: Artista Uno
+                    time: '20:00'
+                  - artist: Artista Dos
+                    time: '21:30'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags:
+      - Events
+      summary: Actualizar evento (parcial)
+      description: Solo administradores. No permite cambiar event_type ni event_capacity.
+      security:
+      - bearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventUpdate'
+            example:
+              status: finished
+      responses:
+        '200':
+          description: Evento actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventDetail'
+              example:
+                id_event: 5
+                venue_id: 1
+                event_type: concert
+                name: Electric Dreams Festival
+                description: Festival de música electrónica
+                image_url: null
+                event_date: '2026-12-15T19:00:00.000Z'
+                status: scheduled
+                price_min: 85
+                price_max: 360
+                event_capacity: 5000
+                available_tickets: 4980
+                venue_name: Movistar Arena
+                venue_city: Bogotá
+                event_details:
+                  lineup:
+                  - artist: Artista Uno
+                    time: '20:00'
+                  - artist: Artista Dos
+                    time: '21:30'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - Events
+      summary: Eliminar evento
+      description: Solo administradores. Elimina también su información. Falla con 409 si tiene compras.
+      security:
+      - bearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/Id'
+      responses:
+        '204':
+          description: Evento eliminado
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+  /events/{id}/info:
+    get:
+      tags:
+      - Events
+      summary: Consultar información propia del evento
+      description: Para el usuario que compró entradas del evento o para un administrador. El cliente la presenta según event_type.
+      security:
+      - bearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Información del evento
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventInfo'
+              example:
+                event_id: 5
+                event_type: concert
+                event_details:
+                  lineup:
+                  - artist: Artista Uno
+                    time: '20:00'
+                  - artist: Artista Dos
+                    time: '21:30'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+      - Events
+      summary: Reemplazar información propia del evento
+      description: Solo administradores. Sirve, por ejemplo, para actualizar el marcador de un evento deportivo.
+      security:
+      - bearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventInfoUpdate'
+            example:
+              event_details:
+                lineup:
+                - artist: Artista Uno
+                  time: '20:00'
+                - artist: Artista Dos
+                  time: '21:30'
+      responses:
+        '200':
+          description: Información actualizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventInfo'
+              example:
+                event_id: 5
+                event_type: concert
+                event_details:
+                  lineup:
+                  - artist: Artista Uno
+                    time: '20:00'
+                  - artist: Artista Dos
+                    time: '21:30'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /purchases:
+    post:
+      tags:
+      - Purchases
+      summary: Registrar compra
+      description: Crea la compra y sus entradas en una transacción y descuenta available_tickets. El precio de cada entrada
+        debe estar entre price_min y price_max del evento. Falla con 409 si el evento no está programado, ya ocurrió o no
+        hay entradas suficientes.
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PurchaseCreate'
+            example:
+              event_id: 5
+              tickets:
+              - zone: VIP
+                price_paid: 360
+      responses:
+        '201':
+          description: Compra creada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseCreated'
+              example:
+                id_purchase: 9
+                event_id: 5
+                total_amount: 360
+                tickets:
+                - zone: VIP
+                  price_paid: 360
+                  ticket_code: c1a5c3b4-5d1f-4f0a-8f55-2d9a7a4c1e10
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+    get:
+      tags:
+      - Purchases
+      summary: Listar compras
+      description: Un usuario ve solo las suyas (Mis entradas). Un administrador ve todas y puede filtrar por user_id y por
+        date para consultar las ventas del día.
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: period
+        in: query
+        description: 'upcoming: eventos futuros; past: eventos ya realizados'
+        schema:
+          type: string
+          enum:
+          - upcoming
+          - past
+      - name: date
+        in: query
+        description: Fecha de la compra (AAAA-MM-DD)
+        schema:
+          type: string
+          format: date
+      - name: user_id
+        in: query
+        description: 'Solo administradores: filtra por usuario'
+        schema:
+          type: integer
+          minimum: 1
+      responses:
+        '200':
+          description: Lista de compras
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PurchaseSummary'
+              example:
+              - id_purchase: 9
+                app_user_id: 3
+                event_id: 5
+                purchase_date: '2026-10-05T16:20:00.000Z'
+                total_amount: 360
+                buyer_name: Laura
+                buyer_email: laura@example.com
+                event_name: Electric Dreams Festival
+                event_type: concert
+                event_date: '2026-12-15T19:00:00.000Z'
+                ticket_count: 1
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /purchases/{id}:
+    get:
+      tags:
+      - Purchases
+      summary: Consultar compra
+      description: Su propietario o un administrador.
+      security:
+      - bearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Compra
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Purchase'
+              example:
+                id_purchase: 9
+                app_user_id: 3
+                event_id: 5
+                purchase_date: '2026-10-05T16:20:00.000Z'
+                total_amount: 360
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /purchases/{id}/tickets:
+    get:
+      tags:
+      - Purchases
+      summary: Listar entradas de una compra
+      description: 'Su propietario o un administrador. Las compras no se modifican ni se eliminan: son el registro de ventas.'
+      security:
+      - bearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Entradas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ticket'
+              example:
+              - id_ticket: 12
+                purchase_id: 9
+                zone: VIP
+                price_paid: 360
+                ticket_code: c1a5c3b4-5d1f-4f0a-8f55-2d9a7a4c1e10
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /reviews:
+    get:
+      tags:
+      - Reviews
+      summary: Listar reseñas
+      description: Público. Filtros opcionales por evento y por usuario (Mis reseñas).
+      parameters:
+      - name: event_id
+        in: query
+        description: Reseñas de un evento
+        schema:
+          type: integer
+          minimum: 1
+      - name: user_id
+        in: query
+        description: Reseñas de un usuario
+        schema:
+          type: integer
+          minimum: 1
+      responses:
+        '200':
+          description: Lista de reseñas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Review'
+              example:
+              - id_review: 2
+                purchase_id: 9
+                rating: 5
+                comment: Excelente ambiente
+                seat_rating: 4
+                tags:
+                - Buen ambiente
+                - Puntualidad
+                review_date: '2026-10-20T10:00:00.000Z'
+                app_user_id: 3
+                event_id: 5
+                author_name: Laura
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    post:
+      tags:
+      - Reviews
+      summary: Publicar reseña
+      description: Solo el dueño de la compra y solo si el evento está finalizado. Una reseña por compra. comment, seat_rating
+        y tags son opcionales.
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewCreate'
+            example:
+              purchase_id: 9
+              rating: 5
+              comment: Excelente ambiente
+              seat_rating: 4
+              tags:
+              - Buen ambiente
+              - Puntualidad
+      responses:
+        '201':
+          description: Reseña creada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+              example:
+                id_review: 2
+                purchase_id: 9
+                rating: 5
+                comment: Excelente ambiente
+                seat_rating: 4
+                tags:
+                - Buen ambiente
+                - Puntualidad
+                review_date: '2026-10-20T10:00:00.000Z'
+                app_user_id: 3
+                event_id: 5
+                author_name: Laura
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+  /reviews/{id}:
+    get:
+      tags:
+      - Reviews
+      summary: Consultar reseña
+      description: Público.
+      parameters:
+      - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Reseña
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+              example:
+                id_review: 2
+                purchase_id: 9
+                rating: 5
+                comment: Excelente ambiente
+                seat_rating: 4
+                tags:
+                - Buen ambiente
+                - Puntualidad
+                review_date: '2026-10-20T10:00:00.000Z'
+                app_user_id: 3
+                event_id: 5
+                author_name: Laura
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags:
+      - Reviews
+      summary: Actualizar reseña (parcial)
+      description: Solo su autor.
+      security:
+      - bearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewUpdate'
+            example:
+              rating: 4
+      responses:
+        '200':
+          description: Reseña actualizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+              example:
+                id_review: 2
+                purchase_id: 9
+                rating: 5
+                comment: Excelente ambiente
+                seat_rating: 4
+                tags:
+                - Buen ambiente
+                - Puntualidad
+                review_date: '2026-10-20T10:00:00.000Z'
+                app_user_id: 3
+                event_id: 5
+                author_name: Laura
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - Reviews
+      summary: Eliminar reseña
+      description: Su autor o un administrador.
+      security:
+      - bearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/Id'
+      responses:
+        '204':
+          description: Reseña eliminada
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      description: Identificador numérico del recurso
+      schema:
+        type: integer
+        minimum: 1
+  responses:
+    BadRequest:
+      description: Datos inválidos
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Datos inválidos
+            details:
+            - rating debe ser menor o igual a 5
+    Unauthorized:
+      description: Sesión no iniciada o credenciales inválidas
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Sesión no iniciada o expirada
+    Forbidden:
+      description: Sin permiso para la operación
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Se requiere rol de administrador
+    NotFound:
+      description: Recurso no encontrado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Evento no encontrado
+    Conflict:
+      description: Conflicto con el estado actual de los datos
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: No hay entradas disponibles suficientes
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        details:
+          type: array
+          items:
+            type: string
+      required:
+      - error
+    Credentials:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+      required:
+      - email
+      - password
+    Session:
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+    User:
+      type: object
+      properties:
+        id_user:
+          type: integer
+        name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+          format: email
+        registration_date:
+          type: string
+          format: date-time
+        is_admin:
+          type: integer
+          description: 1 si es administrador, 0 en caso contrario
+    UserRegistration:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 45
+        last_name:
+          type: string
+          maxLength: 45
+        email:
+          type: string
+          format: email
+          maxLength: 100
+        password:
+          type: string
+          minLength: 8
+          maxLength: 255
+      required:
+      - name
+      - last_name
+      - email
+      - password
+    UserUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 45
+        last_name:
+          type: string
+          maxLength: 45
+        email:
+          type: string
+          format: email
+          maxLength: 100
+        password:
+          type: string
+          minLength: 8
+          maxLength: 255
+        is_admin:
+          type: boolean
+    Venue:
+      type: object
+      properties:
+        id_venue:
+          type: integer
+        name:
+          type: string
+          maxLength: 100
+        address:
+          type: string
+          maxLength: 150
+        city:
+          type: string
+          maxLength: 45
+        venue_capacity:
+          type: integer
+          minimum: 1
+    VenueInput:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        address:
+          type: string
+          maxLength: 150
+        city:
+          type: string
+          maxLength: 45
+        venue_capacity:
+          type: integer
+          minimum: 1
+      required:
+      - name
+      - address
+      - city
+      - venue_capacity
+    EventSummary:
+      type: object
+      properties:
+        id_event:
+          type: integer
+        venue_id:
+          type: integer
+        event_type:
+          type: string
+          enum:
+          - concert
+          - sports
+          - theater
+        name:
+          type: string
+        description:
+          type: string
+        image_url:
+          type: string
+          nullable: true
+        event_date:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum:
+          - scheduled
+          - finished
+          - cancelled
+        price_min:
+          type: number
+        price_max:
+          type: number
+        event_capacity:
+          type: integer
+        available_tickets:
+          type: integer
+        venue_name:
+          type: string
+        venue_city:
+          type: string
+    EventDetail:
+      allOf:
+      - $ref: '#/components/schemas/EventSummary'
+      - type: object
+        properties:
+          event_details:
+            type: object
+            description: 'Estructura según event_type. concert: {"lineup":[{"artist":"texto","time":"HH:MM"}]}. sports: {"home_team":"texto","away_team":"texto","score":{"home":0,"away":0}}.
+              theater: {"cast":[{"performer":"texto","character":"texto"}],"intermissions":[{"time":"HH:MM"}]}.'
+    EventCreate:
+      type: object
+      properties:
+        venue_id:
+          type: integer
+        event_type:
+          type: string
+          enum:
+          - concert
+          - sports
+          - theater
+        name:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+        image_url:
+          type: string
+          maxLength: 255
+        event_date:
+          type: string
+          description: AAAA-MM-DD HH:MM[:SS]
+          example: '2026-12-15 19:00:00'
+        price_min:
+          type: number
+          minimum: 0
+        price_max:
+          type: number
+          minimum: 0
+        event_capacity:
+          type: integer
+          minimum: 1
+        event_details:
+          type: object
+          description: 'Estructura según event_type. concert: {"lineup":[{"artist":"texto","time":"HH:MM"}]}. sports: {"home_team":"texto","away_team":"texto","score":{"home":0,"away":0}}.
+            theater: {"cast":[{"performer":"texto","character":"texto"}],"intermissions":[{"time":"HH:MM"}]}.'
+      required:
+      - venue_id
+      - event_type
+      - name
+      - description
+      - event_date
+      - price_min
+      - price_max
+      - event_capacity
+      - event_details
+    EventUpdate:
+      type: object
+      properties:
+        venue_id:
+          type: integer
+        name:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+        image_url:
+          type: string
+          maxLength: 255
+        event_date:
+          type: string
+          description: AAAA-MM-DD HH:MM[:SS]
+          example: '2026-12-15 19:00:00'
+        status:
+          type: string
+          enum:
+          - scheduled
+          - finished
+          - cancelled
+        price_min:
+          type: number
+          minimum: 0
+        price_max:
+          type: number
+          minimum: 0
+        event_details:
+          type: object
+          description: 'Estructura según event_type. concert: {"lineup":[{"artist":"texto","time":"HH:MM"}]}. sports: {"home_team":"texto","away_team":"texto","score":{"home":0,"away":0}}.
+            theater: {"cast":[{"performer":"texto","character":"texto"}],"intermissions":[{"time":"HH:MM"}]}.'
+    EventInfo:
+      type: object
+      properties:
+        event_id:
+          type: integer
+        event_type:
+          type: string
+          enum:
+          - concert
+          - sports
+          - theater
+        event_details:
+          type: object
+          description: 'Estructura según event_type. concert: {"lineup":[{"artist":"texto","time":"HH:MM"}]}. sports: {"home_team":"texto","away_team":"texto","score":{"home":0,"away":0}}.
+            theater: {"cast":[{"performer":"texto","character":"texto"}],"intermissions":[{"time":"HH:MM"}]}.'
+    EventInfoUpdate:
+      type: object
+      properties:
+        event_details:
+          type: object
+          description: 'Estructura según event_type. concert: {"lineup":[{"artist":"texto","time":"HH:MM"}]}. sports: {"home_team":"texto","away_team":"texto","score":{"home":0,"away":0}}.
+            theater: {"cast":[{"performer":"texto","character":"texto"}],"intermissions":[{"time":"HH:MM"}]}.'
+      required:
+      - event_details
+    TicketInput:
+      type: object
+      properties:
+        zone:
+          type: string
+          maxLength: 45
+        price_paid:
+          type: number
+          minimum: 0
+      required:
+      - zone
+      - price_paid
+    Ticket:
+      type: object
+      properties:
+        id_ticket:
+          type: integer
+        purchase_id:
+          type: integer
+        zone:
+          type: string
+        price_paid:
+          type: number
+        ticket_code:
+          type: string
+    PurchaseCreate:
+      type: object
+      properties:
+        event_id:
+          type: integer
+        tickets:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/TicketInput'
+      required:
+      - event_id
+      - tickets
+    PurchaseCreated:
+      type: object
+      properties:
+        id_purchase:
+          type: integer
+        event_id:
+          type: integer
+        total_amount:
+          type: number
+        tickets:
+          type: array
+          items:
+            type: object
+            properties:
+              zone:
+                type: string
+              price_paid:
+                type: number
+              ticket_code:
+                type: string
+    Purchase:
+      type: object
+      properties:
+        id_purchase:
+          type: integer
+        app_user_id:
+          type: integer
+        event_id:
+          type: integer
+        purchase_date:
+          type: string
+          format: date-time
+        total_amount:
+          type: number
+    PurchaseSummary:
+      type: object
+      properties:
+        id_purchase:
+          type: integer
+        app_user_id:
+          type: integer
+        event_id:
+          type: integer
+        purchase_date:
+          type: string
+          format: date-time
+        total_amount:
+          type: number
+        buyer_name:
+          type: string
+        buyer_email:
+          type: string
+        event_name:
+          type: string
+        event_type:
+          type: string
+          enum:
+          - concert
+          - sports
+          - theater
+        event_date:
+          type: string
+          format: date-time
+        ticket_count:
+          type: integer
+    ReviewCreate:
+      type: object
+      properties:
+        purchase_id:
+          type: integer
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        comment:
+          type: string
+        seat_rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        tags:
+          type: array
+          items:
+            type: string
+            maxLength: 30
+      required:
+      - purchase_id
+      - rating
+    ReviewUpdate:
+      type: object
+      properties:
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        comment:
+          type: string
+        seat_rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        tags:
+          type: array
+          items:
+            type: string
+            maxLength: 30
+    Review:
+      type: object
+      properties:
+        id_review:
+          type: integer
+        purchase_id:
+          type: integer
+        rating:
+          type: integer
+        comment:
+          type: string
+          nullable: true
+        seat_rating:
+          type: integer
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: string
+            maxLength: 30
+          nullable: true
+        review_date:
+          type: string
+          format: date-time
+        app_user_id:
+          type: integer
+        event_id:
+          type: integer
+        author_name:
+          type: string
